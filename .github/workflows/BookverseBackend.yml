@@ -66,14 +66,6 @@ jobs:
         with:
           name: .net-app
   
-      - name: List files after download
-        run: |
-          echo "Downloaded artifact contents:"
-          ls -la
-  
-      - name: List files before deployment
-        run: ls -la ./Bookverse/bin/Release/net6.0/publish
-  
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
