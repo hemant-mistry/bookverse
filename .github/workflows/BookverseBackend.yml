@@ -49,7 +49,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: .net-app
-          path: ./Bookverse/bin/Release/net6.0/publish  # Ensure the path is correct
+          path: ./Bookverse/bin/Release/net6.0/publish/*  # Ensure the path is correct and includes all files
 
   deploy:
     permissions:
