@@ -1,9 +1,9 @@
-name: Build and deploy ASP.Net Core app to an Azure Web App
+name: Bookverse-Backend
 
 env:
   AZURE_WEBAPP_NAME: bookversebackend    # set this to the name of your Azure Web App
-  AZURE_WEBAPP_PACKAGE_PATH: './Bookverse/Bookverse/bin/Release/net6.0/publish'  # Updated path for published output
-  DOTNET_VERSION: '6'                 # set this to the .NET Core version to use
+  AZURE_WEBAPP_PACKAGE_PATH: '${{ env.DOTNET_ROOT }}/myapp'  # Corrected path for published output
+  DOTNET_VERSION: '6'                    # set this to the .NET Core version to use
 
 on:
   push:
@@ -66,4 +66,4 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.BOOKVERSE_BACKEND_APP }}
-          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}  # Correct path to the output directory
