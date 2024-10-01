@@ -36,20 +36,20 @@ jobs:
         run: dotnet build ./Bookverse/Bookverse/Bookverse.csproj --configuration Release  # Specifying project file
 
       - name: Publish with dotnet
-        run: dotnet publish ./Bookverse/Bookverse/Bookverse.csproj -c Release -o myapp  # Specifying project file
+        run: dotnet publish ./Bookverse/Bookverse/Bookverse.csproj -c Release -o ./Bookverse/bin/Release/net6.0/publish  # Specifying project file and output directory
 
       - name: List files after publish
         run: |
           echo "Current directory contents:"
           ls -la
           echo "Contents of the output directory:"
-          ls -la myapp
+          ls -la ./Bookverse/bin/Release/net6.0/publish
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: .net-app
-          path: myapp
+          path: ./Bookverse/bin/Release/net6.0/publish  # Ensure the path is correct
 
   deploy:
     permissions:
@@ -77,4 +77,4 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.BOOKVERSE_BACKEND_APP }}
-          package: myapp  # Correct path to the output directory
+          package: ./Bookverse/bin/Release/net6.0/publish  # Use the correct path to the publish output
