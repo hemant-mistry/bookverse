@@ -2,7 +2,6 @@ name: Bookverse-Backend
 
 env:
   AZURE_WEBAPP_NAME: bookversebackend    # set this to the name of your Azure Web App
-  AZURE_WEBAPP_PACKAGE_PATH: '${{ env.DOTNET_ROOT }}/myapp'  # Corrected path for published output
   DOTNET_VERSION: '6'                    # set this to the .NET Core version to use
 
 on:
@@ -37,13 +36,13 @@ jobs:
         run: dotnet build ./Bookverse/Bookverse/Bookverse.csproj --configuration Release  # Specifying project file
 
       - name: dotnet publish
-        run: dotnet publish ./Bookverse/Bookverse/Bookverse.csproj -c Release -o ${{ env.DOTNET_ROOT }}/myapp  # Specifying project file
+        run: dotnet publish ./Bookverse/Bookverse/Bookverse.csproj -c Release -o myapp  # Specifying project file
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: .net-app
-          path: ${{ env.DOTNET_ROOT }}/myapp
+          path: myapp
 
   deploy:
     permissions:
@@ -66,4 +65,4 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.BOOKVERSE_BACKEND_APP }}
-          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}  # Correct path to the output directory
+          package: myapp  # Correct path to the output directory
