@@ -49,7 +49,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: .net-app
-          path: ./Bookverse/bin/Release/net6.0/publish/*  # Ensure the path is correct and includes all files
+          path: ./Bookverse/bin/Release/net6.0/ # Ensure the path is correct and includes all files
 
   deploy:
     permissions:
@@ -77,4 +77,4 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.BOOKVERSE_BACKEND_APP }}
-          package: ./ # Use the correct path to the publish output
+          package: ./publish # Use the correct path to the publish output
