@@ -65,7 +65,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: .net-app
-  
+          
+      - name: List files after download
+        run: |
+          echo "Downloaded artifact contents:"
+          ls -la
+          
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
