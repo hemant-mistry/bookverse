@@ -34,10 +34,10 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Build with dotnet
-        run: dotnet build ./Bookverse/Bookverse.csproj --configuration Release  # Specifying project file
+        run: dotnet build ./Bookverse/Bookverse/Bookverse.csproj --configuration Release  # Specifying project file
 
       - name: dotnet publish
-        run: dotnet publish ./Bookverse/Bookverse.csproj -c Release -o ${{ env.DOTNET_ROOT }}/myapp  # Specifying project file
+        run: dotnet publish ./Bookverse/Bookverse/Bookverse.csproj -c Release -o ${{ env.DOTNET_ROOT }}/myapp  # Specifying project file
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
