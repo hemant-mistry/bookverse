@@ -1,4 +1,4 @@
-name: Bookverse-Backend
+name: Build and deploy ASP.Net Core app to an Azure Web App
 
 env:
   AZURE_WEBAPP_NAME: bookversebackend    # set this to the name of your Azure Web App
@@ -35,8 +35,15 @@ jobs:
       - name: Build with dotnet
         run: dotnet build ./Bookverse/Bookverse/Bookverse.csproj --configuration Release  # Specifying project file
 
-      - name: dotnet publish
+      - name: Publish with dotnet
         run: dotnet publish ./Bookverse/Bookverse/Bookverse.csproj -c Release -o myapp  # Specifying project file
+
+      - name: List files after publish
+        run: |
+          echo "Current directory contents:"
+          ls -la
+          echo "Contents of the output directory:"
+          ls -la myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
@@ -58,6 +65,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: .net-app
+
+      - name: List files after download
+        run: |
+          echo "Downloaded artifact contents:"
+          ls -la
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
