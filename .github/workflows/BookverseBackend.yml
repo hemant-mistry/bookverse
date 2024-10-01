@@ -1,80 +1,48 @@
-name: Build and deploy ASP.Net Core app to an Azure Web App
-
-env:
-  AZURE_WEBAPP_NAME: bookversebackend    # set this to the name of your Azure Web App
-  DOTNET_VERSION: '6'                    # set this to the .NET Core version to use
-
+name: Build and deploy .NET Core application to Web App bookversebackend
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
+    branches:
+    - main
+env:
+  AZURE_WEBAPP_NAME: bookversebackend
+  AZURE_WEBAPP_PACKAGE_PATH: Bookverse/publish
+  CONFIGURATION: Release
+  DOTNET_CORE_VERSION: 6.0.x
+  WORKING_DIRECTORY: Bookverse
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: Set up dependency caching for faster builds
-        uses: actions/cache@v3
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Build with dotnet
-        run: dotnet build ./Bookverse/Bookverse/Bookverse.csproj --configuration Release  # Specifying project file
-
-      - name: Publish with dotnet
-        run: dotnet publish ./Bookverse/Bookverse/Bookverse.csproj -c Release -o ./Bookverse/bin/Release/net6.0/publish  # Specifying project file and output directory
-
-      - name: List files after publish
-        run: |
-          echo "Current directory contents:"
-          ls -la ./Bookverse/bin/Release/net6.0/
-          echo "Contents of the output directory:"
-          ls -la ./Bookverse/bin/Release/net6.0/publish
-
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
-        with:
-          name: .net-app
-          path: ./Bookverse/bin/Release/net6.0/ # Ensure the path is correct and includes all files
-
+    - uses: actions/checkout@v3
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+    - name: Restore
+      run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+    - name: Build
+      run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+    - name: Test
+      run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
+    - name: Publish
+      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+    - name: Publish Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: webapp
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
   deploy:
-    permissions:
-      contents: none
     runs-on: ubuntu-latest
     needs: build
-    environment:
-      name: 'Development'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-  
     steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v3
-        with:
-          name: .net-app
-          
-      - name: List files after download
-        run: |
-          echo "Downloaded artifact contents:"
-          ls -la
-          
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.BOOKVERSE_BACKEND_APP }}
-          package: ./publish # Use the correct path to the publish output
+    - name: Download artifact from build job
+      uses: actions/download-artifact@v3
+      with:
+        name: webapp
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+    - name: Deploy to Azure WebApp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.bookversebackend_05B0 }}
+        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
