@@ -41,7 +41,7 @@ jobs:
       - name: List files after publish
         run: |
           echo "Current directory contents:"
-          ls -la
+          ls -la ./Bookverse/bin/Release/net6.0/
           echo "Contents of the output directory:"
           ls -la ./Bookverse/bin/Release/net6.0/publish
 
@@ -70,6 +70,14 @@ jobs:
         run: |
           echo "Downloaded artifact contents:"
           ls -la
+
+      - name: Check for package path
+        run: |
+          if [ -d "./Bookverse/bin/Release/net6.0/publish" ]; then
+              echo "Publish directory exists."
+          else
+              echo "Publish directory does not exist or is not a directory."
+          fi
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
