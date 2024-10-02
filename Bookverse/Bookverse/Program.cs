@@ -27,10 +27,14 @@ builder.Services.AddScoped<IUserServices, UserServices>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
 	app.UseSwagger();
-	app.UseSwaggerUI();
+	app.UseSwaggerUI(c =>
+	{
+		c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+		c.RoutePrefix = string.Empty; // Set this to an empty string to serve the UI at the app's root
+	});
 }
 
 app.UseHttpsRedirection();

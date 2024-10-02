@@ -6,3 +6,6 @@
 /Bookverse/.vs
 /Bookverse/Bookverse/bin/Debug/net6.0
 /Bookverse/Bookverse/obj
+/Bookverse/Bookverse/bin/Release/net6.0
+/Bookverse/Bookverse/Properties
+/Bookverse/Bookverse/Bookverse.csproj.user
