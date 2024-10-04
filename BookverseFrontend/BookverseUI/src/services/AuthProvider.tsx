@@ -1,8 +1,8 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 /// IMPORTANT NOTE:
 /// TODO: Before granting the access to secured content, need to add a server validation too.
 
-// auth context interface
+// Auth context interface
 interface AuthContextType {
   isLoggedIn: boolean;
   setIsLoggedIn: (loggedIn: boolean) => void;
@@ -23,6 +23,19 @@ export function useAuth() {
 // AuthProvider component wrapper
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Check localStorage for authentication status on component mount
+  useEffect(() => {
+    const storedLoginStatus = localStorage.getItem("isLoggedIn");
+    if (storedLoginStatus === "true") {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  // Update localStorage whenever isLoggedIn changes
+  useEffect(() => {
+    localStorage.setItem("isLoggedIn", isLoggedIn.toString());
+  }, [isLoggedIn]);
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>

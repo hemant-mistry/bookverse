@@ -9,15 +9,36 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/services/AuthProvider";
-import { GoogleLogin } from "@react-oauth/google";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-export const description =
-  "A login form with email and password. There's an option to login with Google and a link to sign up if you don't have an account.";
 
 export function LoginPage() {
   const navigate = useNavigate();
   const { setIsLoggedIn } = useAuth();
+
+  useEffect(() => {
+    // Check if the user credentials are already stored in localStorage
+    const token = localStorage.getItem("google_token");
+    if (token) {
+      setIsLoggedIn(true); // Log the user in automatically
+      navigate("/"); // Redirect to home page
+    }
+  }, [setIsLoggedIn, navigate]);
+
+  const handleGoogleLoginSuccess =  (credentialResponse: CredentialResponse) => {
+    const { credential } = credentialResponse;
+    if (credential) {
+      console.log(credentialResponse);
+      // Store the Google login credential in localStorage
+      localStorage.setItem("google_token", credential);
+      setIsLoggedIn(true); // Set user as logged in
+      navigate("/"); // Redirect to home page
+    } else {
+      console.error("Google credential is undefined");
+    }
+  };
+
   return (
     <div className="flex items-center justify-center mt-[150px] lg:mt-[80px] md:mt-[80px] ">
       <Card className="mx-auto max-w-sm">
@@ -64,11 +85,7 @@ export function LoginPage() {
               Login
             </Button>
             <GoogleLogin
-              onSuccess={(credentialResponse) => {
-                console.log(credentialResponse);
-                setIsLoggedIn(true); // Set user as logged in
-                navigate("/"); // Redirect to home page
-              }}
+              onSuccess={handleGoogleLoginSuccess}
               onError={() => {
                 console.log("Login Failed");
               }}

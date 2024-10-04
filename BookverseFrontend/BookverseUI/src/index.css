@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -30,6 +29,7 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+    --background-image: url('/src/assets/Bookverse-Background-Image.png');
   }
 
   .dark {
@@ -60,6 +60,9 @@
   }
   body {
     background-color: hsl(var(--background));
+    background-image: var(--background-image); /* Use the background image variable */
+    background-size: cover;
+    background-position: center;
     color: hsl(var(--foreground));
     min-height: 100vh;
     transition: background-color 0.3s, color 0.3s;

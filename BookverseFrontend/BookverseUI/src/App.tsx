@@ -3,20 +3,21 @@ import "./App.css";
 import { HomePage } from "./components/pages/HomePage";
 import { LoginPage } from "./components/pages/LoginPage";
 import { ThemeProvider } from "@/components/theme-provider";
-import { AuthProvider } from "../src/services/AuthProvider"; // Import AuthProvider
-
+import { AuthProvider } from "../src/services/AuthProvider";
 function App() {
   return (
-    <AuthProvider> {/* Wrap the app with AuthProvider */}
-      <Router>
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-          </Routes>
-        </ThemeProvider>
-      </Router>
-    </AuthProvider>
+    <>
+      <AuthProvider>
+        <Router>
+          <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<LoginPage />} />
+            </Routes>
+          </ThemeProvider>
+        </Router>
+      </AuthProvider>
+    </>
   );
 }
 
