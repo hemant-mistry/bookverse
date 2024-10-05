@@ -41,7 +41,7 @@ export function LoginPage() {
 
   return (
     <div className="flex items-center justify-center mt-[150px] lg:mt-[80px] md:mt-[80px] ">
-      <Card className="mx-auto max-w-sm">
+      <Card className="mx-auto max-w-sm dark:bg-blue-500 dark:bg-opacity-5">
         <CardHeader>
           <CardTitle className="text-2xl dark:text-white">Login</CardTitle>
           <CardDescription className="dark:text-gray-400">
@@ -59,7 +59,7 @@ export function LoginPage() {
                 type="email"
                 placeholder="m@example.com"
                 required
-                className="dark:text-white"
+                className="dark:bg-blue-500 dark:bg-opacity-10"
               />
             </div>
             <div className="grid gap-2">
@@ -78,7 +78,7 @@ export function LoginPage() {
                 id="password"
                 type="password"
                 required
-                className="dark:text-white"
+                className="dark:bg-blue-500 dark:bg-opacity-10"
               />
             </div>
             <Button type="submit" className="w-full dark:text-black">
