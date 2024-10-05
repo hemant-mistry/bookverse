@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Bookverse.Persistence.Entities;
 using Bookverse.Services.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Bookverse.Persistence.Entities;
+
+using Microsoft.AspNetCore.Mvc;
 
 namespace Bookverse.Controllers
 {
-	[ApiController]
+    [ApiController]
 	[Route("[controller]")]
 	public class UsersController : ControllerBase
 	{

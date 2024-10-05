@@ -1,8 +1,10 @@
+using Bookverse;
 using Bookverse.Persistence.Entities;
-using Bookverse.Persistence.Repository.Interfaces;
 using Bookverse.Persistence.Repository;
-using Bookverse.Services.Interfaces;
+using Bookverse.Persistence.Repository.Interfaces;
 using Bookverse.Services;
+using Bookverse.Services.Interfaces;
+
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,6 +42,10 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.MapControllers();
 
