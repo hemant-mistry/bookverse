@@ -1,11 +1,9 @@
-import { useAuth } from "@/services/AuthProvider";
 import { Button } from "../ui/button";
 import { Navbar } from "../ui/Navbar";
 import { PencilLine } from 'lucide-react';
 import { HeartHandshake } from 'lucide-react';
 import { Book } from 'lucide-react';
 export function HomePage() {
-  const { isLoggedIn } = useAuth(); // Get the login status from context
 
   return (
     <>
