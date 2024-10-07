@@ -9,30 +9,49 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/services/AuthProvider";
-import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import { useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const { setIsLoggedIn } = useAuth();
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {
-    // Check if the user credentials are already stored in localStorage
-    const token = localStorage.getItem("google_token");
-    if (token) {
-      setIsLoggedIn(true); // Log the user in automatically
-      navigate("/"); // Redirect to home page
+  const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("https://localhost:7134/api/Auth/Login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        login(data.token, "email");
+        navigate("/"); // Redirect to home page or dashboard
+      } else {
+        setErrorMessage(data.message || "Login failed. Please try again.");
+      }
+    } catch (error) {
+      setErrorMessage("An error occurred during login. Please try again.");
     }
-  }, [setIsLoggedIn, navigate]);
+  };
 
-  const handleGoogleLoginSuccess =  (credentialResponse: CredentialResponse) => {
+  const handleGoogleLoginSuccess = (credentialResponse: CredentialResponse) => {
     const { credential } = credentialResponse;
     if (credential) {
-      console.log(credentialResponse);
-      // Store the Google login credential in localStorage
-      localStorage.setItem("google_token", credential);
-      setIsLoggedIn(true); // Set user as logged in
+      login(credential, "google"); // Store Google credential and mark login as Google-based
       navigate("/"); // Redirect to home page
     } else {
       console.error("Google credential is undefined");
@@ -49,54 +68,52 @@ export function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="email" className="dark:text-white text-left">
-                Email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-                className="dark:bg-blue-500 dark:bg-opacity-10"
-              />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password" className="dark:text-white">
-                  Password
+          <form onSubmit={handleLoginSubmit}>
+            <div className="grid gap-4">
+              {errorMessage && (
+                <div className="text-red-500 text-sm">{errorMessage}</div>
+              )}
+              <div className="grid gap-2">
+                <Label htmlFor="email" className="dark:text-white text-left">
+                  Email
                 </Label>
-                <Button
-                  variant="link"
-                  className="ml-auto inline-block text-sm underline dark:text-gray-400"
-                >
-                  Forgot your password?
-                </Button>
+                <Input
+                  id="email"
+                  type="text"
+                  placeholder="m@example.com"
+                  required
+                  className="dark:bg-blue-500 dark:bg-opacity-10"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
-              <Input
-                id="password"
-                type="password"
-                required
-                className="dark:bg-blue-500 dark:bg-opacity-10"
-              />
+              <div className="grid gap-2">
+                <div className="flex items-center">
+                  <Label htmlFor="password" className="dark:text-white">
+                    Password
+                  </Label>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  className="dark:bg-blue-500 dark:bg-opacity-10"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <Button type="submit" className="w-full dark:text-black">
+                Login
+              </Button>
             </div>
-            <Button type="submit" className="w-full dark:text-black">
-              Login
-            </Button>
-            <GoogleLogin
-              onSuccess={handleGoogleLoginSuccess}
-              onError={() => {
-                console.log("Login Failed");
-              }}
-            />
-          </div>
-          <div className="mt-4 text-center text-sm dark:text-gray-400">
-            Don&apos;t have an account?{" "}
-            <Button variant="link" className="dark:text-white">
-              Sign Up
-            </Button>
-          </div>
+          </form>
+          <br/>
+          <GoogleLogin
+            onSuccess={handleGoogleLoginSuccess}
+            onError={() => {
+              console.log("Google Login Failed");
+            }}
+          />
         </CardContent>
       </Card>
     </div>

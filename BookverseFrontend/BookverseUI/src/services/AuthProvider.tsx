@@ -1,11 +1,11 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
-/// IMPORTANT NOTE:
-/// TODO: Before granting the access to secured content, need to add a server validation too.
 
 // Auth context interface
 interface AuthContextType {
   isLoggedIn: boolean;
-  setIsLoggedIn: (loggedIn: boolean) => void;
+  login: (token: string, method: "google" | "email") => void;
+  logout: () => void;
+  isGoogleLogin: boolean;
 }
 
 // Initializing AuthContext
@@ -20,25 +20,44 @@ export function useAuth() {
   return context;
 }
 
-// AuthProvider component wrapper
+// AuthProvider component
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isGoogleLogin, setIsGoogleLogin] = useState(false);
+
+  // Function to handle login
+  const login = (token: string, method: "google" | "email") => {
+    setIsLoggedIn(true);
+    setIsGoogleLogin(method === "google");
+
+    // Store token in localStorage
+    localStorage.setItem("auth_token", token);
+    localStorage.setItem("login_method", method);
+  };
+
+  // Function to handle logout
+  const logout = () => {
+    setIsLoggedIn(false);
+    setIsGoogleLogin(false);
+
+    // Remove token and login method from localStorage
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("login_method");
+  };
 
   // Check localStorage for authentication status on component mount
   useEffect(() => {
-    const storedLoginStatus = localStorage.getItem("isLoggedIn");
-    if (storedLoginStatus === "true") {
+    const token = localStorage.getItem("auth_token");
+    const loginMethod = localStorage.getItem("login_method");
+
+    if (token && loginMethod) {
       setIsLoggedIn(true);
+      setIsGoogleLogin(loginMethod === "google");
     }
   }, []);
 
-  // Update localStorage whenever isLoggedIn changes
-  useEffect(() => {
-    localStorage.setItem("isLoggedIn", isLoggedIn.toString());
-  }, [isLoggedIn]);
-
   return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout, isGoogleLogin }}>
       {children}
     </AuthContext.Provider>
   );
